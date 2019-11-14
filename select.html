@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+        <select id="year-select">
+                <option value="2000">2000</option>
+                <option value="2001">2001</option>
+                <option value="2002">2002</option>
+                <option value="2019">2019</option>
+                <option value="2020">2020</option>
+                <option value="2032">2032</option>
+            </select>
+            
+            <select id="month-select">
+                
+            </select>
+            
+            <select id="day-select">
+            </select>
+            
+            <select id="hour-select">
+                <option value="0">00</option>
+                <option value="1">01</option>        
+                <option value="17">17</option>        
+                <option value="18">18</option>        
+                <option value="19">19</option>        
+                
+                <option value="23">23</option>
+            </select>
+            
+            <select id="minite-select">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                
+                <option>59</option>
+            </select>
+            
+            <select id="second-select">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                
+            </select>
+            
+            <p id="result-wrapper"></p>
+            <script>
+                let year = document.getElementById('year-select');
+                let month = document.getElementById('month-select');
+                let day = document.getElementById('day-select');
+                let hour = document.getElementById('hour-select');
+                let minite = document.getElementById('minite-select');
+                let second = document.getElementById('second-select');
+                let result = document.getElementById('result-wrapper');
+
+                //创建html标记
+                function addOptionHTML (textarr) {
+                    let html = '';
+                    for (let i = 0; i < textarr.length; i ++) {
+                        html += '<option value = ' + textarr[i] +  ' >' + textarr[i] + '<option>';
+                    }
+                    return html;
+                }
+                //初始化
+                function addOptions () {
+                    let dayarr = [];
+                    for (let i = 1; i <= 31; i ++) {
+                        dayarr.push(i);
+                    }
+                    let montharr = [];
+                    for (let i = 1; i <= 12; i ++) {
+                        montharr.push(i);
+                    }
+                    day.insertAdjacentHTML('afterbegin', addOptionHTML(dayarr));
+                    month.insertAdjacentHTML('afterbegin', addOptionHTML(montharr));
+                }
+                //月份与天数联动
+                function setOptions () {
+                    let guidance =  [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                    let dayarr = [];
+                    for (let i = 1; i <= guidance[month.value - 1]; i ++) {
+                        dayarr.push(i);
+                    }
+                    day.innerHTML = '';
+                    day.insertAdjacentHTML('afterbegin', addOptionHTML(dayarr));
+                }
+
+                //计算选择的时间与当前时间的差值并插入结果到页面中。
+
+                function goTime () {
+                    let target = new Date(year.value, (month.value - 1).toString(), day.value, hour.value, minite.value, second.value).getTime();
+                    let idate = new Date().getTime();
+                    let minus = target - idate;
+                    let rmsign = Math.abs(minus);
+                    let iday = Math.floor(rmsign / 86400000);
+                    let ihour = Math.floor(rmsign % 86400000 / 3600000);
+                    let iminite = Math.floor(rmsign % 86400000 % 3600000 / 60000);
+                    let isecond = Math.floor(rmsign % 86400000 % 3600000 % 60000 / 1000);
+                    let print = '';
+                    if (minus < 0) {
+                       print = '现在距离 ' + year.value +
+                       '年' + month.value + '月'+ day.value +
+                       '日星期X ' + hour.value + ':' + minite.value + ':' + second.value + 
+                       ' 已经过去 '+ iday +' 天 ' + ihour + ' 小时 ' + iminite + ' 分 ' + isecond +
+                        ' 秒';
+                        result.innerHTML = print;
+                    }
+                    if (minus > 0) {
+                       print = '现在距离 ' + year.value +
+                       '年' + month.value + '月'+ day.value +
+                       '日星期X ' + hour.value + ':' + minite.value + ':' + second.value + 
+                       ' 还有 '+ iday +' 天 ' + ihour + ' 小时 ' + iminite + ' 分 ' + isecond +
+                        ' 秒';
+                        result.innerHTML = print;
+                    }
+                    if (minus == 0) {
+                        print = '时辰已到';
+                        result.innerHTML = print;
+                    }
+
+                }
+                
+                //添加change事件和定时调用goTime()方法
+                addOptions();
+                setInterval("goTime()", 1000);
+                document.body.addEventListener('change', function (e) {
+                    // console.log(e.target.tagName);
+                    if (e.target.tagName === 'SELECT') {
+                        setOptions();
+                        goTime();
+                    }
+                })
+            </script>
+        </body>
+</html>
